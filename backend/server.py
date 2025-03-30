@@ -52,4 +52,5 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
-app.run(host='10.108.243.5', port=5000, debug=True)
+#app.run(host='10.108.243.5', port=5000, debug=True)
+app.run(host='192.168.1.203', port=5000, debug=True)
