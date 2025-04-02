@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.39, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
 --
--- Host: localhost    Database: discordbot
+-- Host: localhost    Database: anna
 -- ------------------------------------------------------
--- Server version	8.0.39
+-- Server version	8.0.41
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -59,8 +59,11 @@ CREATE TABLE `news` (
   `url` varchar(500) DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `displayed` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `channel` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `channel` (`channel`),
+  CONSTRAINT `news_ibfk_1` FOREIGN KEY (`channel`) REFERENCES `channels` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +72,7 @@ CREATE TABLE `news` (
 
 LOCK TABLES `news` WRITE;
 /*!40000 ALTER TABLE `news` DISABLE KEYS */;
-INSERT INTO `news` VALUES (1,'🚀 Launch Day is Here!','We’re excited to announce the official launch of our platform. Come explore all the new features!','https://fastly.picsum.photos/id/120/200/200.jpg?hmac=iqJko6IlBQjHPwKm31fa-KtEGqwtJfXohpfL0Y41EtQ','https://example.com/launch-details','2025-03-29 18:53:25',1);
+INSERT INTO `news` VALUES (1,'🚀 Launch Day is Here!','We’re excited to announce the official launch of our platform. Come explore all the new features!','https://fastly.picsum.photos/id/120/200/200.jpg?hmac=iqJko6IlBQjHPwKm31fa-KtEGqwtJfXohpfL0Y41EtQ','https://example.com/launch-details','2025-03-29 18:53:25',1,1),(12,'testiando website','testiando el body del website',NULL,'','2025-04-02 23:25:14',0,1);
 /*!40000 ALTER TABLE `news` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,4 +137,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-31 21:19:03
+-- Dump completed on 2025-04-02 19:27:29
