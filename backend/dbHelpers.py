@@ -29,17 +29,16 @@ def getUsersChannels(username):
     cursor.close()
     return channels
 
-def submitAnnouncement(channel, title, body, url):
+def submitAnnouncement(channel, title, body, url, img):
     cursor = conn.cursor()
 
     cursor.execute(f"select id from channels where link = '{channel}' LIMIT 1")
     channelId = cursor.fetchall()[0][0]
-    print(channelId)
-            
+
     #this statement is vulnerable to sql injection btw
     cursor.execute(f"""
-                    INSERT INTO news(channel,title,body,url)
-                    VALUES ({channelId},'{title}','{body}','{url}')
+                    INSERT INTO news(channel,title,body,picture,url)
+                    VALUES ({channelId},'{title}','{body}','{img}','{url}')
                    """)
     conn.commit()
     cursor.close()

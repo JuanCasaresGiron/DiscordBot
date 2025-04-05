@@ -1,3 +1,4 @@
+import os
 from flask import Flask,render_template, request, redirect, url_for, session
 from dbHelpers import getUsersChannels, submitAnnouncement
 
@@ -43,7 +44,17 @@ def submit():
     title = request.form['title']
     body = request.form['body']
     url = request.form['url']
-    submitAnnouncement(channel, title, body, url)
+
+    #need to use double bslash \\ for path because mysql uses single bslash \ for escape 
+    if 'picture' in request.files:
+        file = request.files['picture']
+        fileExt = os.path.splitext(file.filename)[1]
+        filePath = fr'.\\images\\{session['username']}'
+        if not os.path.exists(filePath): os.mkdir(filePath)
+        fullImgPath = fr'{filePath}\\{title}{fileExt}'
+        file.save(fullImgPath)
+    
+    submitAnnouncement(channel, title, body, url, fullImgPath)
     return redirect(url_for('index'))
 
 
