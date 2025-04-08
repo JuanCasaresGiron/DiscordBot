@@ -1,7 +1,7 @@
 import requests
 
 #change this to a manually created webhook for testing 
-url = 'https://discord.com/api/webhooks/1358480480361644263/r4TqZJceg7jVolLcPBzyH--zs71scU0XTMQNlvutuV4iZwR-IPgwMDdSuNfIzKASsuxE'
+url = 'https://discord.com/api/webhooks/1358528304268709918/ZMWCZrQRB5J2PGAnP_zOINmZEacpuf9W6RXMFpZUpADfeLFdExVkgB_2QPi-WBHIwChu'
 
 data = {
   "content": None,

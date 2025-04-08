@@ -1,5 +1,10 @@
 import mysql.connector
+import requests
+import os
+from dotenv import load_dotenv
 
+# Load variables from .env file
+load_dotenv()
 
 conn = mysql.connector.connect(
     host="localhost",
@@ -29,6 +34,27 @@ def getUsersChannels(username):
     cursor.close()
     return channels
 
+def uploadImage(image):
+    url = "https://api.imgur.com/3/upload"
+    clientId = os.getenv("IMGUR_CLIENT_ID")
+    headers = {"Authorization": f"Client-ID {clientId}"}
+    with open(image, "rb") as image_file:
+        payload = {
+            "image": image_file.read()
+    }
+
+    response = requests.post(url, headers=headers, files=payload)
+    # Check if the upload was successful
+    if response.status_code == 200:
+        json_response = response.json()
+        # The uploaded image link is available in json_response["data"]["link"]
+        image_url = json_response["data"]["link"]
+        return image_url
+    else:
+        # Return error information from the response
+        return f"Error: {response.status_code} - {response.json()}"
+
+
 def submitAnnouncement(channel, title, body, url, img):
     cursor = conn.cursor()
 
@@ -45,4 +71,5 @@ def submitAnnouncement(channel, title, body, url, img):
     return True
 
 
+print(uploadImage(r'C:\Users\fabio\Documents\GitHub\DiscordBot\backend\images\anna\New Lebron image.png'))
 #http://www.testingurl.com

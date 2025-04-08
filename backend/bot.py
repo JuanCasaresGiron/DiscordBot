@@ -14,10 +14,10 @@ intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 DB_CONFIG = {
-    "host": "10.111.42.245",
+    "host": "localhost",
     "user": "fabio",
     "password": "fabio",
-    "database": "discordbot"
+    "database": "anna"
 }
 
 def get_db_connection():
@@ -25,10 +25,14 @@ def get_db_connection():
 
 @bot.event
 async def on_ready():
-    try:
-        await bot.tree.sync()
-    except:
-        pass
+    print(f"✅ Logged in as {bot.user}")
+    for guild in bot.guilds:
+        for channel in guild.text_channels:
+            try:
+                await channel.send("✅ Bot connected!")
+                await bot.tree.sync()
+            except:
+                pass
     check_news_updates.start()
 
 @bot.tree.command(name="subscribe", description="Subscribe this channel to a news feed (e.g. anna-general)")
@@ -63,7 +67,7 @@ async def check_news_updates():
     news_items = cursor.fetchall()
 
     for row in news_items:
-        link = row['link']
+        link = row['channel']
 
         embed = discord.Embed(
             title=row['title'],
