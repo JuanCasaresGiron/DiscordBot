@@ -1,7 +1,7 @@
 import os
 from flask import Flask,render_template, request, redirect, url_for, session, send_from_directory
 from dbHelpers import getUsersChannels, submitAnnouncement
-
+import webhooks
 
 app = Flask(__name__)
 
@@ -44,18 +44,12 @@ def submit():
     channel = request.form['channel']
     title = request.form['title']
     body = request.form['body']
+    image = request.form['image']
     url = request.form['url']
+        
+    if(submitAnnouncement(channel, title, body, image, url)):
+        webhooks.announce(channel, title, body, image, url)     
 
-    #need to use double bslash \\ for path because mysql uses single bslash \ for escape 
-    if 'picture' in request.files:
-        file = request.files['picture']
-        fileExt = os.path.splitext(file.filename)[1]
-        filePath = fr'.\\images\\{session['username']}'
-        if not os.path.exists(filePath): os.mkdir(filePath)
-        fullImgPath = fr'{filePath}\\{title}{fileExt}'
-        file.save(fullImgPath)
-    
-    submitAnnouncement(channel, title, body, url, fullImgPath)
     return redirect(url_for('index'))
 
 

@@ -55,9 +55,10 @@ def uploadImage(image):
         return f"Error: {response.status_code} - {response.json()}"
 
 
-def submitAnnouncement(channel, title, body, url, img):
+def submitAnnouncement(channel, title, body, img, url):
     cursor = conn.cursor()
 
+    #validate this
     cursor.execute(f"select id from channels where link = '{channel}' LIMIT 1")
     channelId = cursor.fetchall()[0][0]
 
@@ -69,7 +70,3 @@ def submitAnnouncement(channel, title, body, url, img):
     conn.commit()
     cursor.close()
     return True
-
-
-print(uploadImage(r'C:\Users\fabio\Documents\GitHub\DiscordBot\backend\images\anna\New Lebron image.png'))
-#http://www.testingurl.com
