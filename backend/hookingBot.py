@@ -82,6 +82,36 @@ async def subscribe(interaction: discord.Interaction, link: str):
 	cursor.close()
 	conn.close()
 
+@bot.tree.command(name="subscriptions", description="List all the subscriptions on this channel")
+async def subscriptions(interaction: discord.Interaction):
+	#get the current channel id
+	channelId = interaction.channel_id
+
+	#open db connection
+	conn = get_db_connection()
+	cursor = conn.cursor()
+
+	#select 
+	cursor.execute("""
+		SELECT 
+			subscriptions.link, 
+			channels.channel_name,
+			users.username 
+		FROM subscriptions
+		LEFT JOIN channels ON subscriptions.link = channels.link
+		LEFT JOIN users ON channels.owner = users.id
+		WHERE subscriptions.channel_id = %s
+	""",(channelId,))
+
+	subs = cursor.fetchall()
+	messageLines = [f"**Your Subscriptions on this channel ({interaction.channel.name}):**\n"]
+	for sub in subs:
+		messageLines.append(f"Link: {sub[0]}\nChannel Name: {sub[1]}\nOwner: {sub[2]}\n")
+	
+	await interaction.response.send_message("\n".join(messageLines))
+
+
+	#needed commands (subscriptions, unsubscribe)
 
 load_dotenv()
 token = os.getenv("DISCORD_BOT_TOKEN")
