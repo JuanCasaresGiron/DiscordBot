@@ -39,7 +39,7 @@ async def getChannelWebHook(context: discord.Interaction):
 	return annaWebHook.url
 
 @bot.tree.command(name="subscribe", description="Subscribe this channel to a news feed (e.g. anna-general)")
-@app_commands.describe(link="The news category to subscribe to")
+@app_commands.describe(link="The unique link from the user.")
 async def subscribe(interaction: discord.Interaction, link: str):
 	#get the current channel id and webhooks
 	channelId = interaction.channel_id
@@ -109,9 +109,35 @@ async def subscriptions(interaction: discord.Interaction):
 		messageLines.append(f"Link: {sub[0]}\nChannel Name: {sub[1]}\nOwner: {sub[2]}\n")
 	
 	await interaction.response.send_message("\n".join(messageLines))
+	cursor.close()
+	conn.close()
 
+@bot.tree.command(name="unsubscribe", description="Unsubscribe to a channel (use /subscriptions to view them)")
+@app_commands.describe(link="The unique link from /subscriptions.")
+async def unsubscribe(interaction: discord.Interaction, link: str):
+	#get the current channel id
+	channelId = interaction.channel_id
 
-	#needed commands (subscriptions, unsubscribe)
+	#open db connection
+	conn = get_db_connection()
+	cursor = conn.cursor()
+
+	#sql
+	cursor.execute("DELETE FROM subscriptions WHERE channel_id = %s AND link = %s",(channelId,link))
+	
+	if cursor.rowcount > 0:
+		conn.commit()
+		await interaction.response.send_message(f'Unsubscribed from `{link}`.')
+	else:
+		conn.rollback() #I think this does not do anything but just in case
+		await interaction.response.send_message('No subscription was found. Please make sure that your link is correct.')
+	
+	cursor.close()
+	conn.close()
+
+#get latest announcement for each subscribed channel
+#get info command
+
 
 load_dotenv()
 token = os.getenv("DISCORD_BOT_TOKEN")
