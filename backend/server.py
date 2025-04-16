@@ -41,14 +41,14 @@ def login():
 def submit():
     if 'username' not in session:
         return redirect(url_for('login'))
-    channel = request.form['channel']
+    link = request.form['link']
     title = request.form['title']
     body = request.form['body']
     image = request.form['image']
     url = request.form['url']
-        
-    if(submitAnnouncement(channel, title, body, image, url)):
-        webhooks.announce(channel, title, body, image, url)     
+
+    if(submitAnnouncement(link, title, body, image, url)):
+        webhooks.announce(link, title, body, image, url)     
 
     return redirect(url_for('index'))
 

@@ -55,17 +55,22 @@ def uploadImage(image):
         return f"Error: {response.status_code} - {response.json()}"
 
 
-def submitAnnouncement(channel, title, body, img, url):
+def submitAnnouncement(link, title, body, img, url):
     cursor = conn.cursor()
 
-    #validate this
-    cursor.execute(f"select id from channels where link = '{channel}' LIMIT 1")
-    channelId = cursor.fetchall()[0][0]
+    print(link)
+    print(title)
+    print(body)
+    print(img)
+    print(url)
+        
+
+    # TODO validate this
 
     #this statement is vulnerable to sql injection btw
     cursor.execute(f"""
-                    INSERT INTO news(channel,title,body,picture,url)
-                    VALUES ({channelId},'{title}','{body}','{img}','{url}')
+                    INSERT INTO announcements(link,title,body,picture,url)
+                    VALUES ('{link}','{title}','{body}','{img}','{url}')
                    """)
     conn.commit()
     cursor.close()

@@ -2,6 +2,8 @@ import discord
 import mysql.connector
 from discord.ext import commands
 from discord import app_commands
+from typing import Optional
+
 
 #env variables
 import os
@@ -11,8 +13,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 intents.webhooks = True
-
 bot = commands.Bot(command_prefix="!", intents=intents)
+
 DB_CONFIG = {
     "host": "localhost",
     "user": "fabio",
@@ -28,6 +30,7 @@ async def on_ready():
 	await bot.tree.sync()
 	print('Bot ready')
 
+#Helper function to return the webhook url for the anna webhook
 async def getChannelWebHook(context: discord.Interaction):
 	webhooks = await context.channel.webhooks()
 	#get a list of webhooks that are named anna
@@ -136,6 +139,76 @@ async def unsubscribe(interaction: discord.Interaction, link: str):
 	conn.close()
 
 #get latest announcement for each subscribed channel
+@bot.tree.command(name="latest", description="Send the latest announcements.")
+@app_commands.describe(link="The unique link from /subscriptions.")
+async def latest(interaction: discord.Interaction, link: Optional[str] = None):
+	#get the current channel id
+	channelId = interaction.channel_id
+	#open db connection
+	conn = get_db_connection()
+	cursor = conn.cursor()
+	
+	# wildcard for the link. 
+	# Initial value for everything, because we want to get the latest announcement for all the "links" if a link is not specified
+	linkWildCard = "%" 
+	#make sure passed link is valid
+	if link:
+		cursor.execute("SELECT link, webhook_url FROM subscriptions WHERE channel_id = %s AND link = %s", (channelId, link))
+		if not cursor.fetchone():
+			await interaction.response.send_message("The link is not valid. Please double check your subscribed links with `/subscriptions`")
+			return
+		linkWildCard = link
+	
+	sql = """
+		select 
+			subscriptions.link,
+			subscriptions.webhook_url,
+			channels.channel_name,
+			users.username,
+			announcements.title,
+			announcements.body,
+			announcements.picture,
+			announcements.url,
+			announcements.timestamp
+		from subscriptions 
+		LEFT JOIN channels ON subscriptions.link = channels.link
+		LEFT JOIN users ON channels.owner = users.id
+		LEFT JOIN 
+		(
+			SELECT 
+				announcements.link, 
+				max(announcements.id) as ID
+			FROM announcements
+			WHERE announcements.link LIKE %(linkWildCard)s
+			GROUP BY announcements.link
+		)latestAnnouncements ON subscriptions.link = latestAnnouncements.link 
+		LEFT JOIN announcements ON announcements.id = latestAnnouncements.id
+		where channel_id = %(channel_id)s
+		and subscriptions.link LIKE %(linkWildCard)s
+	"""
+	params = {'linkWildCard': linkWildCard, 'channel_id': channelId}
+	cursor.execute(sql, params)
+
+	announcements = cursor.fetchall()
+	tempdata = []
+	for announcement in announcements:
+		tempdata.append(announcement)
+
+	await interaction.response.send_message("\n\n".join(map(str, tempdata)))
+
+
+	# TODO USE WEBHOOK TO RESPOND INSTEAD OF THE TEMP DATA
+	
+	cursor.close()
+	conn.close()
+		
+	
+
+	
+
+
+
+
 #get info command
 
 

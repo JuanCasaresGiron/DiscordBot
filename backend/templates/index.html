@@ -38,10 +38,10 @@
       <form action="/submit" method="POST" enctype="multipart/form-data">
         <!-- Announcement Channel Dropdown -->
         <div class="field">
-          <label class="label">Select Channel</label>
+          <label class="label">Select Channel Link</label>
           <div class="control">
             <div class="select">
-              <select name="channel" required>
+              <select name="link" required>
                     {% for key, value in channels.items() %}
                         <option value="{{ key }}">{{ value }}</option>
                     {% endfor %}
