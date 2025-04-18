@@ -2,9 +2,8 @@ import requests
 
 #change this to a manually created webhook for testing 
 
-def announce(channel, title, body, image, url):
+def announce(channel, title, body, image, url,linkName, webhookURL):
 	print(f"Resolve for webhookurl using {channel}")
-	webhookURL = 'https://discord.com/api/webhooks/1358528304268709918/ZMWCZrQRB5J2PGAnP_zOINmZEacpuf9W6RXMFpZUpADfeLFdExVkgB_2QPi-WBHIwChu'
 	data = {
 		"content": None,
   		"embeds": [
@@ -15,8 +14,8 @@ def announce(channel, title, body, image, url):
 			"color": 5814783,
 			"fields": [
 				{
-				  "name": "The IP:",
-				  "value": "127.0.0.1:1212"
+				  "name": "link:",
+				  "value": linkName
 				}
       		],
 			"image": {

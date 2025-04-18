@@ -1,5 +1,5 @@
 import os
-from flask import Flask,render_template, request, redirect, url_for, session, send_from_directory
+from flask import Flask,render_template, request, redirect, url_for, session
 from dbHelpers import getUsersChannels, submitAnnouncement
 import webhooks
 
@@ -46,9 +46,10 @@ def submit():
     body = request.form['body']
     image = request.form['image']
     url = request.form['url']
+    webhookURL = 'https://discord.com/api/webhooks/1358528304268709918/ZMWCZrQRB5J2PGAnP_zOINmZEacpuf9W6RXMFpZUpADfeLFdExVkgB_2QPi-WBHIwChu'
 
     if(submitAnnouncement(link, title, body, image, url)):
-        webhooks.announce(link, title, body, image, url)     
+        webhooks.announce(link, title, body, image, url, webhookURL)     
 
     return redirect(url_for('index'))
 
@@ -57,6 +58,8 @@ def submit():
 def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
+
+
 
 #app.run(host='10.108.243.5', port=5000, debug=True)
 app.run(host='192.168.1.203', port=5000, debug=True)

@@ -3,6 +3,7 @@ import mysql.connector
 from discord.ext import commands
 from discord import app_commands
 from typing import Optional
+import webhooks
 
 
 #env variables
@@ -185,6 +186,8 @@ async def latest(interaction: discord.Interaction, link: Optional[str] = None):
 		LEFT JOIN announcements ON announcements.id = latestAnnouncements.id
 		where channel_id = %(channel_id)s
 		and subscriptions.link LIKE %(linkWildCard)s
+		Order by announcements.timestamp DESC
+		LIMIT 3
 	"""
 	params = {'linkWildCard': linkWildCard, 'channel_id': channelId}
 	cursor.execute(sql, params)
@@ -194,21 +197,19 @@ async def latest(interaction: discord.Interaction, link: Optional[str] = None):
 	for announcement in announcements:
 		tempdata.append(announcement)
 
-	await interaction.response.send_message("\n\n".join(map(str, tempdata)))
+	#await interaction.response.send_message("\n\n".join(map(str, tempdata)))
+	await interaction.response.send_message("Retrieving latest announcements. **Please keep in mind that If no link is provided, we’ll return the latest announcements from up to three links.**")
 
-
-	# TODO USE WEBHOOK TO RESPOND INSTEAD OF THE TEMP DATA
+	for announcement in announcements:
+		#unpack the row
+		link, webhookURL, linkName, owner, title, body, image, url, timestamp = announcement
+		#announce
+		print(link, title, body, image, url, linkName, webhookURL)
+		webhooks.announce(link, title, body, image, url, linkName, webhookURL)
 	
 	cursor.close()
 	conn.close()
 		
-	
-
-	
-
-
-
-
 #get info command
 
 
