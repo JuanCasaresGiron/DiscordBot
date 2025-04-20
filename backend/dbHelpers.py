@@ -1,17 +1,31 @@
 import mysql.connector
-import requests
-import os
+import os, bcrypt
 from dotenv import load_dotenv
 
 # Load variables from .env file
 load_dotenv()
 
 conn = mysql.connector.connect(
-    host="localhost",
-    user="fabio",
-    password="fabio",
+    host=os.getenv('DB_HOST'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
     database="anna"
 )
+
+def validateUser(username, password:str):
+    cursor = conn.cursor()
+    cursor.execute("select * from users where username = %s",(username,))
+    user = cursor.fetchone()
+    #salt for hashing
+    salt = bcrypt.gensalt(rounds=12)
+    storedPassword:str = user[2]
+
+    #encode to utf
+    password = password.encode('utf-8')
+    storedPassword = storedPassword.encode('utf-8')
+
+    return bcrypt.checkpw(password,storedPassword)
+    
 
 def getUsersChannels(username):
     cursor = conn.cursor()

@@ -1,17 +1,11 @@
 import os
 from flask import Flask,render_template, request, redirect, url_for, session
-from dbHelpers import getUsersChannels, submitAnnouncement
+from dbHelpers import getUsersChannels, submitAnnouncement, validateUser
 import webhooks
 
 app = Flask(__name__)
 
 app.secret_key = "your_secret_key"  # Change this!
-
-users = {
-    "anna": "anna123",
-    "testuser": "password123",
-    "admin": "adminpass"
-}
 
 @app.route("/")
 def index():
@@ -27,7 +21,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username in users and users[username] == password:
+        if validateUser(username=username,password=password):
             session['username'] = username
             return redirect(url_for('index'))
         else:
@@ -46,10 +40,11 @@ def submit():
     body = request.form['body']
     image = request.form['image']
     url = request.form['url']
+    #get this
     webhookURL = 'https://discord.com/api/webhooks/1358528304268709918/ZMWCZrQRB5J2PGAnP_zOINmZEacpuf9W6RXMFpZUpADfeLFdExVkgB_2QPi-WBHIwChu'
 
     if(submitAnnouncement(link, title, body, image, url)):
-        webhooks.announce(link, title, body, image, url, webhookURL)     
+        webhooks.announce(link, title, body, image, url,'HARDCODED_LinkName' ,webhookURL)     
 
     return redirect(url_for('index'))
 
