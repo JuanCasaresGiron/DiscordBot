@@ -1,6 +1,6 @@
 import os
 from flask import Flask,render_template, request, redirect, url_for, session
-from dbHelpers import getUsersChannels, submitAnnouncement, validateUser
+from dbHelpers import getUsersChannels, submitAnnouncement, validateUser, getSubscriptions
 import webhooks
 
 app = Flask(__name__)
@@ -40,11 +40,21 @@ def submit():
     body = request.form['body']
     image = request.form['image']
     url = request.form['url']
-    #get this
-    webhookURL = 'https://discord.com/api/webhooks/1358528304268709918/ZMWCZrQRB5J2PGAnP_zOINmZEacpuf9W6RXMFpZUpADfeLFdExVkgB_2QPi-WBHIwChu'
 
+    #check if user owns the channel
+    username = session['username']
+    userChannels = getUsersChannels(username)
+
+    if not userChannels.get(link):
+        print('User does not own the specified channel') #Return this to user.
+        return redirect(url_for('index'))
+
+    #get all webhook urls
+    webhookURLs = getSubscriptions(link)
+    webhookURLs = [webhookURL[0] for webhookURL in webhookURLs]
+    
     if(submitAnnouncement(link, title, body, image, url)):
-        webhooks.announce(link, title, body, image, url,'HARDCODED_LinkName' ,webhookURL)     
+        webhooks.announce(link, title, body, image, url, link ,webhookURLs)
 
     return redirect(url_for('index'))
 

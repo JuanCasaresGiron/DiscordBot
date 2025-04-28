@@ -12,6 +12,7 @@ conn = mysql.connector.connect(
     database="anna"
 )
 
+#Logs the user in, Returns true if the login is valid
 def validateUser(username, password:str):
     cursor = conn.cursor()
     cursor.execute("select * from users where username = %s",(username,))
@@ -24,9 +25,18 @@ def validateUser(username, password:str):
     password = password.encode('utf-8')
     storedPassword = storedPassword.encode('utf-8')
 
+    cursor.close()
     return bcrypt.checkpw(password,storedPassword)
+
+#get all channel subscriptions.
+def getSubscriptions(link):
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT webhook_url from subscriptions where link = %s",(link,))
+    rows = cursor.fetchall()
+    return rows
     
 
+#returns a dictionary of all the channels the user owns
 def getUsersChannels(username):
     cursor = conn.cursor()
 
@@ -51,13 +61,6 @@ def getUsersChannels(username):
 def submitAnnouncement(link, title, body, img, url):
     cursor = conn.cursor()
 
-    print(link)
-    print(title)
-    print(body)
-    print(img)
-    print(url)
-        
-
     # TODO validate this
 
     #this statement is vulnerable to sql injection btw
@@ -65,6 +68,7 @@ def submitAnnouncement(link, title, body, img, url):
                     INSERT INTO announcements(link,title,body,picture,url)
                     VALUES ('{link}','{title}','{body}','{img}','{url}')
                    """)
+                   
     conn.commit()
     cursor.close()
     return True

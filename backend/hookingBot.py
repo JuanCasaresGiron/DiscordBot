@@ -108,7 +108,7 @@ async def subscriptions(interaction: discord.Interaction):
 	""",(channelId,))
 
 	subs = cursor.fetchall()
-	messageLines = [f"**Your Subscriptions on this channel ({interaction.channel.name}):**\n"]
+	messageLines = [f"**Your Subscriptions on this channel (#{interaction.channel.name}):**\n"]
 	for sub in subs:
 		messageLines.append(f"Link: {sub[0]}\nChannel Name: {sub[1]}\nOwner: {sub[2]}\n")
 	
