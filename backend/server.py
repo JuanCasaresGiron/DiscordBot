@@ -1,6 +1,6 @@
 import os
 from flask import Flask,render_template, request, redirect, url_for, session
-from dbHelpers import getUsersChannels, submitAnnouncement, validateUser, getSubscriptions
+from dbHelpers import getUsersChannels, submitAnnouncement, validateUser, getSubscriptions, createChannel
 import webhooks
 
 app = Flask(__name__)
@@ -58,6 +58,18 @@ def submit():
 
     return redirect(url_for('index'))
 
+@app.route('/create_channel', methods=['POST'])
+def create_channel():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    channel_name = request.form['channel_name']
+    channel_link = request.form['channel_link']
+    username = session['username']
+    
+    if not createChannel(channel_name, channel_link, username): 
+        print('Issues creating the channel') # send a notification on the site in the future
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():

@@ -205,7 +205,7 @@ async def latest(interaction: discord.Interaction, link: Optional[str] = None):
 		link, webhookURL, linkName, owner, title, body, image, url, timestamp = announcement
 		#announce
 		print(link, title, body, image, url, linkName, webhookURL)
-		webhooks.announce(link, title, body, image, url, linkName, webhookURL)
+		webhooks.announce(link, title, body, image, url, linkName, [webhookURL])
 	
 	cursor.close()
 	conn.close()

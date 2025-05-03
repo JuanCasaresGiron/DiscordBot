@@ -1,3 +1,8 @@
+'''
+OLD SCRIPT, NOT BEING USED.
+NEW VERSION IS CALLED: HookingBot.py
+'''
+
 import discord
 import mysql.connector
 from discord.ext import commands, tasks

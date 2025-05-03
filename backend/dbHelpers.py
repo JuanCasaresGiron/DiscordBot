@@ -72,3 +72,23 @@ def submitAnnouncement(link, title, body, img, url):
     conn.commit()
     cursor.close()
     return True
+
+def createChannel (channelName, channelLink, username):
+    cursor = conn.cursor()
+    sql = """
+        INSERT INTO channels(channel_name,link,owner) VALUES(
+        	%(channelName)s,
+	        %(channelLink)s,
+	        (select id from users where username = %(username)s)
+        )
+    """
+    params = {'channelName':channelName, 'channelLink':channelLink, 'username':username}
+    cursor.execute(sql, params)
+    if cursor.rowcount > 0:
+        conn.commit()
+        cursor.close()
+        return True
+    else:
+        conn.rollback() #I think this does not do anything but just in case
+        cursor.close()
+        return False

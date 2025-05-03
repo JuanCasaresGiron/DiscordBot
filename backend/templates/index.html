@@ -39,7 +39,7 @@
         <!-- Announcement Channel Dropdown -->
         <div class="field">
           <label class="label">Select Channel Link</label>
-          <div class="control">
+          <div class="control has-addons">
             <div class="select">
               <select name="link" required>
                     {% for key, value in channels.items() %}
@@ -47,6 +47,10 @@
                     {% endfor %}
               </select>
             </div>
+            <button class="button is-info is-light" id="create-channel-button" type="button">
+              <span class="icon"><i class="fas fa-plus"></i></span>
+              <span>Create Channel</span>
+            </button>
           </div>
         </div>
         <!-- Title Field -->
@@ -90,6 +94,55 @@
     </div>
   </section>
 
+  <div class="modal" id="create-channel-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Create New Channel</p>
+        <button class="delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        <form id="create-channel-form" action="/create_channel" method="POST">
+          <div class="field">
+            <label class="label">Channel Name</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                name="channel_name"
+                placeholder="Enter channel name"
+                required
+              />
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Unique Link Value</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                name="channel_link"
+                placeholder="Enter unique link value"
+                required
+              />
+            </div>
+          </div>
+        </form>
+      </section>
+      <footer class="modal-card-foot">
+        <button
+          class="button is-success is-light"
+          type="submit"
+          form="create-channel-form"
+        >
+          Save Channel
+        </button>
+        <button class="button" type="button" id="cancel-create-channel">
+          Cancel
+        </button>
+      </footer>
+    </div>
+  </div>
 
   <script>
     // File input script
@@ -106,6 +159,17 @@
           });
         });
       }
+      // Modal controls
+      const openBtn = document.getElementById("create-channel-button");
+      const modal = document.getElementById("create-channel-modal");
+      const closeElements = modal.querySelectorAll(
+        ".modal-background, .modal-card-head .delete, #cancel-create-channel"
+      );
+
+      openBtn.addEventListener("click", () => modal.classList.add("is-active"));
+      closeElements.forEach((el) =>
+        el.addEventListener("click", () => modal.classList.remove("is-active"))
+      );
     });
   </script>
 </body>
